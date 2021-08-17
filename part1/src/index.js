@@ -1,59 +1,32 @@
 import React, { useState } from 'react'
 import ReactDOM from 'react-dom'
 
-const Button = ({ onClick, text }) => {
-  return <button onClick={onClick}>{text}</button>
-}
+const anecdotes = [
+  'If it hurts, do it more often',
+  'Adding manpower to a late software project makes it later!',
+  'The first 90 percent of the code accounts for the first 90 percent of the development time...The remaining 10 percent of the code accounts for the other 90 percent of the development time.',
+  'Any fool can write code that a computer can understand. Good programmers write code that humans can understand.',
+  'Premature optimization is the root of all evil.',
+  'Debugging is twice as hard as writing the code in the first place. Therefore, if you write the code as cleverly as possible, you are, by definition, not smart enough to debug it.',
+]
 
-const StatisticLine = ({ text, value }) => {
-  return (
-    <tr>
-      <td>{text}</td>
-      <td>{value}</td>
-    </tr>
-  )
-}
+const App = (props) => {
+  const [selected, setSelected] = useState(0)
 
-const Statistics = ({ good, neutral, bad }) => {
-  const all = good + neutral + bad
-  if (all > 0) {
-    const average = (good - bad) / all
-    const positive = (good * 100) / all + ' %'
-    return (
-      <table>
-        <tbody>
-          <StatisticLine text="good" value={good} />
-          <StatisticLine text="neutral" value={neutral} />
-          <StatisticLine text="bad" value={bad} />
-          <StatisticLine text="all" value={all} />
-          <StatisticLine text="average" value={average} />
-          <StatisticLine text="positive" value={positive} />
-        </tbody>
-      </table>
-    )
+  const generateRandomNumber = () => {
+    return Math.floor(Math.random() * anecdotes.length)
   }
-  return <div>No feedback given</div>
-}
-
-const App = () => {
-  // save clicks of each button to its own state
-  const [good, setGood] = useState(0)
-  const [neutral, setNeutral] = useState(0)
-  const [bad, setBad] = useState(0)
-
-  const handleClick = (value, increaser) => () => increaser(value + 1)
 
   return (
     <div>
-      <h1>give feedback</h1>
-      <Button onClick={handleClick(good, setGood)} text="good" />
-      <Button onClick={handleClick(neutral, setNeutral)} text="neutral" />
-      <Button onClick={handleClick(bad, setBad)} text="bad" />
-
-      <h1>statistics</h1>
-      <Statistics good={good} neutral={neutral} bad={bad}></Statistics>
+      <div>{props.anecdotes[selected]}</div>
+      <div>
+        <button onClick={() => setSelected(generateRandomNumber)}>
+          next anecdote
+        </button>
+      </div>
     </div>
   )
 }
 
-ReactDOM.render(<App />, document.getElementById('root'))
+ReactDOM.render(<App anecdotes={anecdotes} />, document.getElementById('root'))
