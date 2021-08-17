@@ -4,16 +4,20 @@ import ReactDOM from 'react-dom'
 // a proper place to define a component
 const Statistics = ({ good, neutral, bad }) => {
   const all = good + neutral + bad
-  return (
-    <div>
-      <div>good {good}</div>
-      <div>neutral {neutral}</div>
-      <div>bad {bad}</div>
-      <div>all {all}</div>
-      <div>average {all === 0 ? 0 : (good - bad) / all}</div>
-      <div>positive {all === 0 ? 0 : (good * 100) / all} %</div>
-    </div>
-  )
+
+  if (all > 0) {
+    return (
+      <div>
+        <div>good {good}</div>
+        <div>neutral {neutral}</div>
+        <div>bad {bad}</div>
+        <div>all {all}</div>
+        <div>average {all === 0 ? 0 : (good - bad) / all}</div>
+        <div>positive {all === 0 ? 0 : (good * 100) / all} %</div>
+      </div>
+    )
+  }
+  return <div>No feedback given</div>
 }
 
 const App = () => {
