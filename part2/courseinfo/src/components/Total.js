@@ -1,5 +1,3 @@
-import React from 'react'
-
 const Total = ({ parts }) => {
   return (
     <strong>
