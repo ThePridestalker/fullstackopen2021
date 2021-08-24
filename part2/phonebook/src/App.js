@@ -6,12 +6,14 @@ import axios from 'axios'
 
 const App = () => {
   const [persons, setPersons] = useState([])
+  const [personsToCompare, setPersonsToCompare] = useState([])
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
 
   useEffect(() => {
     axios.get('http://localhost:3001/persons').then((response) => {
       setPersons(response.data)
+      setPersonsToCompare(response.data)
     })
   }, [])
 
@@ -44,7 +46,9 @@ const App = () => {
   const handleFilterChange = (event) => {
     // regex case insensitive
     const regex = new RegExp(event.target.value, 'i')
-    const filteredPersons = persons.filter((person) => person.name.match(regex))
+    const filteredPersons = personsToCompare.filter((person) =>
+      person.name.match(regex)
+    )
     setPersons(filteredPersons)
   }
 
