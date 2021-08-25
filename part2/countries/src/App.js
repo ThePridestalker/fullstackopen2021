@@ -44,7 +44,12 @@ const App = () => {
       <div>
         find countries <input onChange={handleOnChange} />
         {countries.map((country) => {
-          return <div key={country.numericCode}>{country.name}</div>
+          return (
+            <div key={country.numericCode}>
+              {country.name}
+              <button onClick={() => setCountries([country])}>show</button>
+            </div>
+          )
         })}
       </div>
     )
