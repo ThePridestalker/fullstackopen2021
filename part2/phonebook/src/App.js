@@ -12,28 +12,48 @@ const App = () => {
 
   useEffect(() => {
     personService.getAll().then((initialPersons) => {
+      setPersonsToCompare(initialPersons)
       setPersons(initialPersons)
     })
   }, [])
 
   useEffect(() => {
-    setPersonsToCompare(persons)
-  }, [persons])
+    setPersons(personsToCompare)
+  }, [personsToCompare])
 
   const addPerson = (event) => {
     event.preventDefault()
 
-    const nameExists = persons.filter((person) => person.name === newName)
+    const personExists = persons.filter((person) => person.name === newName)
 
-    if (nameExists.length > 0) {
-      alert(`${newName} is already added to phonebook`)
+    if (personExists.length > 0) {
+      const updateOrder = window.confirm(
+        `${newName} is already added to phonebook, replace the old number with a new one ?`
+      )
+      if (updateOrder) {
+        const updatedPerson = {
+          ...personExists[0],
+          number: newNumber,
+        }
+        personService
+          .update(updatedPerson.id, updatedPerson)
+          .then((returnedPerson) => {
+            setPersonsToCompare(
+              personsToCompare.map((person) =>
+                person.id !== returnedPerson.id ? person : returnedPerson
+              )
+            )
+            setNewName('')
+            setNewNumber('')
+          })
+      }
     } else {
       const newPerson = {
         name: newName,
         number: newNumber,
       }
       personService.create(newPerson).then((returnedPerson) => {
-        setPersons(persons.concat(returnedPerson))
+        setPersonsToCompare(personsToCompare.concat(returnedPerson))
       })
     }
     setNewName('')
@@ -44,7 +64,7 @@ const App = () => {
     const deleteOrder = window.confirm(`Delete ${name}?`)
     if (deleteOrder) {
       personService.remove(id)
-      setPersons(persons.filter((person) => person.id !== id))
+      setPersonsToCompare(personsToCompare.filter((person) => person.id !== id))
     }
   }
 
