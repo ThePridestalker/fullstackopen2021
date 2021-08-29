@@ -13,9 +13,12 @@ const App = () => {
   useEffect(() => {
     personService.getAll().then((initialPersons) => {
       setPersons(initialPersons)
-      setPersonsToCompare(initialPersons)
     })
   }, [])
+
+  useEffect(() => {
+    setPersonsToCompare(persons)
+  }, [persons])
 
   const addPerson = (event) => {
     event.preventDefault()
@@ -35,6 +38,14 @@ const App = () => {
     }
     setNewName('')
     setNewNumber('')
+  }
+
+  const deletePerson = (id, name) => () => {
+    const deleteOrder = window.confirm(`Delete ${name}?`)
+    if (deleteOrder) {
+      personService.remove(id)
+      setPersons(persons.filter((person) => person.id !== id))
+    }
   }
 
   const handleNameChange = (event) => {
@@ -67,7 +78,7 @@ const App = () => {
         handleNumberChange={handleNumberChange}
       />
       <h2>Numbers</h2>
-      <Person persons={persons} />
+      <Person persons={persons} deletePerson={deletePerson} />
     </div>
   )
 }
