@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import Person from './components/Person'
 import PersonForm from './components/PersonForm'
 import Filter from './components/Filter'
+import Notification from './components/Notification'
 import personService from './services/persons'
 
 const App = () => {
@@ -9,6 +10,7 @@ const App = () => {
   const [personsToCompare, setPersonsToCompare] = useState([])
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
+  const [errorMessage, setErrorMessage] = useState(null)
 
   useEffect(() => {
     personService.getAll().then((initialPersons) => {
@@ -43,6 +45,12 @@ const App = () => {
                 person.id !== returnedPerson.id ? person : returnedPerson
               )
             )
+
+            setErrorMessage(`Changed ${returnedPerson.name} number`)
+
+            setTimeout(() => {
+              setErrorMessage(null)
+            }, 5000)
             setNewName('')
             setNewNumber('')
           })
@@ -54,10 +62,16 @@ const App = () => {
       }
       personService.create(newPerson).then((returnedPerson) => {
         setPersonsToCompare(personsToCompare.concat(returnedPerson))
+
+        setErrorMessage(`Added ${newPerson.name}`)
+
+        setTimeout(() => {
+          setErrorMessage(null)
+        }, 5000)
+        setNewName('')
+        setNewNumber('')
       })
     }
-    setNewName('')
-    setNewNumber('')
   }
 
   const deletePerson = (id, name) => () => {
@@ -88,6 +102,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification errorMessage={errorMessage} />
       <Filter handleFilterChange={handleFilterChange} />
       <h2>Add a new person</h2>
       <PersonForm
