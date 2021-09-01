@@ -10,7 +10,8 @@ const App = () => {
   const [personsToCompare, setPersonsToCompare] = useState([])
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
-  const [errorMessage, setErrorMessage] = useState(null)
+  const [message, setMessage] = useState(null)
+  const [msgType, setMsgType] = useState('')
 
   useEffect(() => {
     personService.getAll().then((initialPersons) => {
@@ -46,10 +47,10 @@ const App = () => {
               )
             )
 
-            setErrorMessage(`Changed ${returnedPerson.name} number`)
-
+            setMessage(`Changed ${returnedPerson.name} number`)
+            setMsgType('success')
             setTimeout(() => {
-              setErrorMessage(null)
+              setMessage(null)
             }, 5000)
             setNewName('')
             setNewNumber('')
@@ -63,10 +64,10 @@ const App = () => {
       personService.create(newPerson).then((returnedPerson) => {
         setPersonsToCompare(personsToCompare.concat(returnedPerson))
 
-        setErrorMessage(`Added ${newPerson.name}`)
-
+        setMessage(`Added ${newPerson.name}`)
+        setMsgType('success')
         setTimeout(() => {
-          setErrorMessage(null)
+          setMessage(null)
         }, 5000)
         setNewName('')
         setNewNumber('')
@@ -77,8 +78,27 @@ const App = () => {
   const deletePerson = (id, name) => () => {
     const deleteOrder = window.confirm(`Delete ${name}?`)
     if (deleteOrder) {
-      personService.remove(id)
-      setPersonsToCompare(personsToCompare.filter((person) => person.id !== id))
+      personService
+        .remove(id)
+        .then(() => {
+          setPersonsToCompare(
+            personsToCompare.filter((person) => person.id !== id)
+          )
+        })
+        .catch(() => {
+          setMessage(
+            `Information of ${name} has already been removed from the server`
+          )
+          setMsgType('error')
+
+          setPersonsToCompare(
+            personsToCompare.filter((person) => person.id !== id)
+          )
+
+          setTimeout(() => {
+            setMessage(null)
+          }, 5000)
+        })
     }
   }
 
@@ -102,7 +122,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-      <Notification errorMessage={errorMessage} />
+      <Notification message={message} msgType={msgType} />
       <Filter handleFilterChange={handleFilterChange} />
       <h2>Add a new person</h2>
       <PersonForm
