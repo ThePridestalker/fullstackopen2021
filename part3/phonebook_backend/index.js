@@ -62,31 +62,37 @@ app.delete('/api/persons/:id', (request, response) => {
 })
 
 app.post('/api/persons', (request, response) => {
-  const person = request.body
-  const randomNumber = Math.floor(Math.random() * 100) + 1
+  const body = request.body
 
-  // The name or number is missing
-  if (!person.name || !person.number) {
+  if (!body.name) {
     return response.status(400).json({
-      error: 'missing name or number',
-    })
-  }
-  // The name already exists in the phonebook
-  if (persons.find((p) => p.name === person.name)) {
-    return response.status(400).json({
-      error: 'name already exist',
+      error: 'name is missing',
     })
   }
 
-  const newPerson = {
-    id: randomNumber,
-    name: person.name,
-    number: person.number,
+  if (!body.number) {
+    return response.status(400).json({
+      error: 'number is missing',
+    })
   }
 
-  persons.push(newPerson)
+  Person.find({}).then((persons) => {
+    // A person can have only 1 entry in the phonebook
+    if (persons.some((person) => person.name === body.name)) {
+      return response.status(400).json({
+        error: 'name must be unique',
+      })
+    }
 
-  response.json(newPerson)
+    const person = new Person({
+      name: body.name,
+      number: body.number,
+    })
+
+    person.save().then((savedPerson) => {
+      response.json(savedPerson)
+    })
+  })
 })
 
 const PORT = process.env.PORT
