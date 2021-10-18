@@ -39,9 +39,11 @@ app.get('/api/info', (request, response) => {
 })
 
 app.get('/api/persons', (req, res) => {
-  Person.find({}).then((result) => {
-    res.json(result)
-  })
+  Person.find({})
+    .then((result) => {
+      res.json(result)
+    })
+    .catch((error) => next(error))
 })
 
 app.get('/api/persons/:id', (request, response) => {
@@ -58,12 +60,14 @@ app.get('/api/persons/:id', (request, response) => {
 app.delete('/api/persons/:id', (req, res, next) => {
   const id = req.params.id
 
-  Person.findByIdAndRemove(id).then(() => {
-    res.status(204).end()
-  })
+  Person.findByIdAndRemove(id)
+    .then(() => {
+      res.status(204).end()
+    })
+    .catch((error) => next(error))
 })
 
-app.post('/api/persons', (request, response) => {
+app.post('/api/persons', (request, response, next) => {
   const body = request.body
 
   if (!body.name) {
@@ -78,24 +82,48 @@ app.post('/api/persons', (request, response) => {
     })
   }
 
-  Person.find({}).then((persons) => {
-    // A person can have only 1 entry in the phonebook
-    if (persons.some((person) => person.name === body.name)) {
-      return response.status(400).json({
-        error: 'name must be unique',
+  Person.find({})
+    .then((persons) => {
+      // A person can have only 1 entry in the phonebook
+      if (persons.some((person) => person.name === body.name)) {
+        return response.status(400).json({
+          error: 'name must be unique',
+        })
+      }
+
+      const person = new Person({
+        name: body.name,
+        number: body.number,
       })
-    }
 
-    const person = new Person({
-      name: body.name,
-      number: body.number,
+      person
+        .save()
+        .then((savedPerson) => {
+          response.json(savedPerson)
+        })
+        .catch((error) => next(error))
     })
-
-    person.save().then((savedPerson) => {
-      response.json(savedPerson)
-    })
-  })
+    .catch((error) => next(error))
 })
+
+const unknownEndpoint = (request, response) => {
+  response.status(404).send({ error: 'unknown endpoint' })
+}
+
+app.use(unknownEndpoint)
+
+const errorHandler = (error, request, response, next) => {
+  console.error(error.message)
+
+  if (error.name === 'CastError') {
+    return response.status(400).send({ error: 'malformatted id' })
+  }
+
+  next(error)
+}
+
+// this has to be the last loaded middleware.
+app.use(errorHandler)
 
 const PORT = process.env.PORT
 app.listen(PORT, () => {
