@@ -25,20 +25,24 @@ app.use(
   })
 )
 
-app.get('/', (request, response) => {
-  response.send('<h1>Hello World!</h1>')
-})
+// app.get('/', (request, response) => {
+//   response.send('<h1>Hello World!</h1>')
+// })
 
-app.get('/api/info', (request, response) => {
+app.get('/api/info', (request, response, next) => {
   const currentDate = new Date()
 
-  response.send(`
-                <p>Phonebook has info for ${persons.length} people</p>
+  Person.find({})
+    .then((result) => {
+      response.send(`
+                <p>Phonebook has info for ${result.length} people</p>
                 <p>${currentDate}</p>
                 `)
+    })
+    .catch((error) => next(error))
 })
 
-app.get('/api/persons', (req, res) => {
+app.get('/api/persons', (req, res, next) => {
   Person.find({})
     .then((result) => {
       res.json(result)
@@ -46,15 +50,18 @@ app.get('/api/persons', (req, res) => {
     .catch((error) => next(error))
 })
 
-app.get('/api/persons/:id', (request, response) => {
-  const id = Number(request.params.id)
-  const person = persons.find((person) => person.id === id)
+app.get('/api/persons/:id', (req, res, next) => {
+  const id = req.params.id
 
-  if (person) {
-    response.json(person)
-  } else {
-    response.status(404).end()
-  }
+  Person.findById(id)
+    .then((person) => {
+      if (person) {
+        res.json(person)
+      } else {
+        response.status(404).end()
+      }
+    })
+    .catch((error) => next(error))
 })
 
 app.delete('/api/persons/:id', (req, res, next) => {
