@@ -25,10 +25,6 @@ app.use(
   })
 )
 
-// app.get('/', (request, response) => {
-//   response.send('<h1>Hello World!</h1>')
-// })
-
 app.get('/api/info', (request, response, next) => {
   const currentDate = new Date()
 
@@ -77,27 +73,8 @@ app.delete('/api/persons/:id', (req, res, next) => {
 app.post('/api/persons', (request, response, next) => {
   const body = request.body
 
-  if (!body.name) {
-    return response.status(400).json({
-      error: 'name is missing',
-    })
-  }
-
-  if (!body.number) {
-    return response.status(400).json({
-      error: 'number is missing',
-    })
-  }
-
   Person.find({})
     .then((persons) => {
-      // A person can have only 1 entry in the phonebook
-      if (persons.some((person) => person.name === body.name)) {
-        return response.status(400).json({
-          error: 'name must be unique',
-        })
-      }
-
       const person = new Person({
         name: body.name,
         number: body.number,
@@ -138,6 +115,8 @@ const errorHandler = (error, request, response, next) => {
 
   if (error.name === 'CastError') {
     return response.status(400).send({ error: 'malformatted id' })
+  } else if (error.name === 'ValidationError') {
+    return response.status(400).json({ error: error.message })
   }
 
   next(error)
