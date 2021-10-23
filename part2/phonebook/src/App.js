@@ -61,17 +61,26 @@ const App = () => {
         name: newName,
         number: newNumber,
       }
-      personService.create(newPerson).then((returnedPerson) => {
-        setPersonsToCompare(personsToCompare.concat(returnedPerson))
+      personService
+        .create(newPerson)
+        .then((returnedPerson) => {
+          setPersonsToCompare(personsToCompare.concat(returnedPerson))
 
-        setMessage(`Added ${newPerson.name}`)
-        setMsgType('success')
-        setTimeout(() => {
-          setMessage(null)
-        }, 5000)
-        setNewName('')
-        setNewNumber('')
-      })
+          setMessage(`Added ${newPerson.name}`)
+          setMsgType('success')
+          setTimeout(() => {
+            setMessage(null)
+          }, 5000)
+          setNewName('')
+          setNewNumber('')
+        })
+        .catch((error) => {
+          setMsgType('error')
+          setMessage(error.response.data.error)
+          setTimeout(() => {
+            setMessage(null)
+          }, 5000)
+        })
     }
   }
 

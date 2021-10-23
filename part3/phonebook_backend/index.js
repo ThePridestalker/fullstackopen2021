@@ -53,8 +53,6 @@ app.get('/api/persons/:id', (req, res, next) => {
     .then((person) => {
       if (person) {
         res.json(person)
-      } else {
-        response.status(404).end()
       }
     })
     .catch((error) => next(error))
@@ -73,19 +71,15 @@ app.delete('/api/persons/:id', (req, res, next) => {
 app.post('/api/persons', (request, response, next) => {
   const body = request.body
 
-  Person.find({})
-    .then((persons) => {
-      const person = new Person({
-        name: body.name,
-        number: body.number,
-      })
+  const person = new Person({
+    name: body.name,
+    number: body.number,
+  })
 
-      person
-        .save()
-        .then((savedPerson) => {
-          response.json(savedPerson)
-        })
-        .catch((error) => next(error))
+  person
+    .save()
+    .then((savedPerson) => {
+      response.json(savedPerson)
     })
     .catch((error) => next(error))
 })
@@ -97,7 +91,8 @@ app.put('/api/persons/:id', (request, response, next) => {
     number: body.number,
   }
 
-  Person.findByIdAndUpdate(id, person, { new: true })
+  const opts = { new: true, runValidators: true }
+  Person.findByIdAndUpdate(id, person, opts)
     .then((updatedPerson) => {
       response.json(updatedPerson)
     })
