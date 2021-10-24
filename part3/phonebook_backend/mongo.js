@@ -17,13 +17,13 @@ mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true })
 
 const personSchema = new mongoose.Schema({
   name: String,
-  number: String,
+  number: String
 })
 
 const Person = mongoose.model('Person', personSchema)
 
 // command "node mongo.js <myPassword>" returns all the records
-if (process.argv.length == 3) {
+if (process.argv.length === 3) {
   Person.find({}).then((result) => {
     console.log('phonebook:')
     result.forEach((person) => {
@@ -37,7 +37,7 @@ if (process.argv.length == 3) {
 if (process.argv.length > 3) {
   const person = new Person({
     name: name,
-    number: number,
+    number: number
   })
 
   person.save().then((result) => {

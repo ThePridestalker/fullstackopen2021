@@ -17,13 +17,13 @@ const personSchema = new mongoose.Schema({
     type: String,
     required: true,
     unique: true,
-    minlength: 3,
+    minlength: 3
   },
   number: {
     type: String,
     required: true,
-    minlength: 8,
-  },
+    minlength: 8
+  }
 })
 
 personSchema.plugin(uniqueValidator)
@@ -33,7 +33,7 @@ personSchema.set('toJSON', {
     returnedObject.id = returnedObject._id.toString()
     delete returnedObject._id
     delete returnedObject.__v
-  },
+  }
 })
 
 module.exports = mongoose.model('Person', personSchema)

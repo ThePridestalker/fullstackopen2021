@@ -20,7 +20,7 @@ app.use(
       '-',
       tokens['response-time'](req, res),
       'ms',
-      JSON.stringify(req.body),
+      JSON.stringify(req.body)
     ].join(' ')
   })
 )
@@ -73,7 +73,7 @@ app.post('/api/persons', (request, response, next) => {
 
   const person = new Person({
     name: body.name,
-    number: body.number,
+    number: body.number
   })
 
   person
@@ -88,7 +88,7 @@ app.put('/api/persons/:id', (request, response, next) => {
   const body = request.body
   const id = request.params.id
   const person = {
-    number: body.number,
+    number: body.number
   }
 
   const opts = { new: true, runValidators: true }
