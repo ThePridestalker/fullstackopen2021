@@ -46,6 +46,22 @@ test('making an HTTP POST request to the /api/blogs url successfully creates a n
   expect(response.body.length).toBe(helper.initialBlogs.length + 1)
 })
 
+test('if the likes property is missing from the request, it will default to the value 0', async () => {
+  const newBlog = {
+    title: 'test3 blog',
+    author: 'Axel',
+    url: 'www.thiscouldbeablogurl.com'
+  }
+
+  const response = await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(201)
+    .expect('Content-Type', /application\/json/)
+
+  expect(response.body.likes).toBe(0)
+})
+
 afterAll(() => {
   mongoose.connection.close()
 })
