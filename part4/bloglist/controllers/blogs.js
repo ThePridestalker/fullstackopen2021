@@ -17,11 +17,15 @@ blogsRouter.post('/', (request, response, next) => {
     likes: body.likes || 0
   })
 
-  blog.save()
-    .then(savedBlog => {
-      response.status(201).json(savedBlog)
-    })
-    .catch(error => next(error))
+  if (!blog.title || !blog.url) {
+    response.status(400).json('title or url is missing')
+  } else {
+    blog.save()
+      .then(savedBlog => {
+        response.status(201).json(savedBlog)
+      })
+      .catch(error => next(error))
+  }
 })
 
 module.exports = blogsRouter
