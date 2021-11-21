@@ -8,10 +8,7 @@ const api = supertest(app)
 beforeEach(async () => {
   await Blog.deleteMany({})
 
-  for (const blog of helper.initialBlogs) {
-    const blogObject = new Blog(blog)
-    await blogObject.save()
-  }
+  await Blog.insertMany(helper.initialBlogs)
 })
 
 test('correct amount of blog posts are returned in JSON format', async () => {
