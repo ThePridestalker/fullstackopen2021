@@ -6,35 +6,26 @@ const api = supertest(app)
 
 beforeEach(async () => {
   await User.deleteMany({})
-
-  const newUser = {
-    username: 'Axelinho',
-    password: 'testpassword',
-    name: 'Axel'
-  }
-  // inserts the first and working user into the DB
-  await api.post('/api/users').send(newUser)
 })
-//        username: {
-//     type: String,
-//     unique: true,
-//     minlength: 3,
-//     required: true
-//   },
-//   passwordHash: {
-//     type: String,
-//     required: true
-//   },
-//   name: String
+
 describe('Invalid users are not created', () => {
   test('user cant be duplicated', async () => {
+    const firstNewUser = {
+      username: 'Axelinho',
+      password: 'testpassword',
+      name: 'Axel'
+    }
+
+    // inserts the first user into the DB
+    await api.post('/api/users').send(firstNewUser)
+
     const newUser = {
       username: 'Axelinho',
       password: 'testpassword',
       name: 'Axel'
     }
     await api
-      .post('/api/blogs')
+      .post('/api/users')
       .send(newUser)
       .expect(400)
       .expect('Content-Type', /application\/json/)
@@ -47,7 +38,7 @@ describe('Invalid users are not created', () => {
       name: 'Thomas'
     }
     await api
-      .post('/api/blogs')
+      .post('/api/users')
       .send(newUser)
       .expect(400)
       .expect('Content-Type', /application\/json/)
@@ -60,7 +51,7 @@ describe('Invalid users are not created', () => {
       name: 'Thomas'
     }
     await api
-      .post('/api/blogs')
+      .post('/api/users')
       .send(newUser)
       .expect(400)
       .expect('Content-Type', /application\/json/)

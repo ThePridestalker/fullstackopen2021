@@ -2,8 +2,41 @@ const mongoose = require('mongoose')
 const supertest = require('supertest')
 const app = require('../app')
 const Blog = require('../models/blog')
+const User = require('../models/user')
 const helper = require('../tests/test_helper')
+
 const api = supertest(app)
+
+let testUser
+
+beforeAll(async () => {
+  const newUserCredentials = {
+    username: 'TestUser',
+    password: 'testingpassword',
+    name: 'AxelTest'
+  }
+
+  const newUserLoginCredentials = {
+    username: 'TestUser',
+    password: 'testingpassword'
+  }
+
+  // creates the TestUser
+  const newTestUserRequest = await api.post('/api/users')
+    .send(newUserCredentials)
+    .expect(201)
+
+  // perform a login to get the user token
+  const loginRequest = await api
+    .post('/api/login')
+    .send(newUserLoginCredentials)
+    .expect(200)
+
+  testUser = {
+    token: loginRequest.body.token,
+    id: newTestUserRequest.body.id
+  }
+})
 
 beforeEach(async () => {
   await Blog.deleteMany({})
@@ -35,6 +68,7 @@ test('making an HTTP POST request to the /api/blogs url successfully creates a n
 
   await api
     .post('/api/blogs')
+    .set('Authorization', `Bearer ${testUser.token}`)
     .send(newBlog)
     .expect(201)
     .expect('Content-Type', /application\/json/)
@@ -45,13 +79,14 @@ test('making an HTTP POST request to the /api/blogs url successfully creates a n
 
 test('if the likes property is missing from the request, it will default to the value 0', async () => {
   const newBlog = {
-    title: 'test3 blog',
+    title: 'test CON TOKEN blog',
     author: 'Axel',
     url: 'www.thiscouldbeablogurl.com'
   }
 
   const response = await api
     .post('/api/blogs')
+    .set('Authorization', `Bearer ${testUser.token}`)
     .send(newBlog)
     .expect(201)
     .expect('Content-Type', /application\/json/)
@@ -67,11 +102,26 @@ test('if the title and url properties are missing from the request data, the bac
 
   await api
     .post('/api/blogs')
+    .set('Authorization', `bearer ${testUser.token}`)
     .send(newBlog)
     .expect(400)
     .expect('Content-Type', /application\/json/)
 })
 
-afterAll(() => {
+test('adding a blog fails with the proper status code 401 Unauthorized if a token is not provided', async () => {
+  const newBlog = {
+    title: 'test NO TOKEN blog',
+    author: 'Axel',
+    url: 'www.thiscouldbeablogurl.com'
+  }
+
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(401)
+})
+
+afterAll(async () => {
+  await User.findByIdAndDelete(testUser.id)
   mongoose.connection.close()
 })

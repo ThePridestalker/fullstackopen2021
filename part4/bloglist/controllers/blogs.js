@@ -12,20 +12,24 @@ blogsRouter.post('/', async (request, response) => {
   const body = request.body
   const user = request.user
 
-  const blog = new Blog({
-    title: body.title,
-    author: body.author,
-    url: body.url,
-    likes: body.likes || 0,
-    user: user._id
-  })
+  if (user) {
+    const blog = new Blog({
+      title: body.title,
+      author: body.author,
+      url: body.url,
+      likes: body.likes || 0,
+      user: user._id
+    })
 
-  if (!blog.title || !blog.url) {
-    response.status(400).json('title or url is missing')
+    if (!blog.title || !blog.url) {
+      response.status(400).json('title or url is missing')
+    } else {
+      const savedBlog = await blog.save()
+      user.blogs = user.blogs.concat(savedBlog._id)
+      response.status(201).json(savedBlog)
+    }
   } else {
-    const savedBlog = await blog.save()
-    user.blogs = user.blogs.concat(savedBlog._id)
-    response.status(201).json(savedBlog)
+    return response.status(401).json({ error: 'no token given in Autherization header' })
   }
 })
 
