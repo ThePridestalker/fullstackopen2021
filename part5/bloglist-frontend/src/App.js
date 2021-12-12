@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import Blog from './components/Blog'
+import Notification from './components/Notification'
 import blogService from './services/blogs'
 import loginService from './services/login'
 
@@ -12,6 +13,9 @@ const App = () => {
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
   const [url, setUrl] = useState('')
+
+  const [notificationMessage, setNotificationMessage] = useState(null)
+  const [notificationType, setNotificationType] = useState('success')
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
@@ -97,14 +101,22 @@ const App = () => {
 
   const handleLogin = async (event) => {
     event.preventDefault()
-    const user = await loginService.login({ username, password })
-    blogService.setToken(user.token)
-    setUser(user)
-    setUsername('')
-    setPassword('')
-    window.localStorage.setItem(
-      'loggedBloglistUser', JSON.stringify(user)
-    )
+    try {
+      const user = await loginService.login({ username, password })
+      blogService.setToken(user.token)
+      setUser(user)
+      setUsername('')
+      setPassword('')
+      window.localStorage.setItem(
+        'loggedBloglistUser', JSON.stringify(user)
+      )
+    } catch (exception) {
+      setNotificationMessage('wrong username or password')
+      setNotificationType('error')
+      setTimeout(() => {
+        setNotificationMessage(null)
+      }, 5000)
+    }
   }
 
   const handleLogout = (event) => {
@@ -126,13 +138,23 @@ const App = () => {
       url: url
     }
 
-    const blogSaved = await blogService.create(newBlog)
-    setBlogs(() => blogs.concat(blogSaved))
+    try {
+      const blogSaved = await blogService.create(newBlog)
+      setBlogs(() => blogs.concat(blogSaved))
+      setNotificationMessage(`a new blog ${blogSaved.title} by ${blogSaved.author} added`)
+      setNotificationType('success')
+      setTimeout(() => {
+        setNotificationMessage(null)
+      }, 5000)
+    } catch (exception) {
+      console.log({ exception })
+    }
   }
 
   return (
     <div>
       <h2>blogs</h2>
+      <Notification message={notificationMessage} messageType={notificationType} />
       {user === null
         ? loginForm()
         : blogList()}
