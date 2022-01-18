@@ -4,16 +4,13 @@ import Notification from './components/Notification'
 import blogService from './services/blogs'
 import loginService from './services/login'
 import Togglable from './components/Toggable'
+import BlogForm from './components/BlogForm'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
-
-  const [title, setTitle] = useState('')
-  const [author, setAuthor] = useState('')
-  const [url, setUrl] = useState('')
 
   const [notificationMessage, setNotificationMessage] = useState(null)
   const [notificationType, setNotificationType] = useState('success')
@@ -61,36 +58,7 @@ const App = () => {
 
   const createNew = () => (
     <Togglable buttonLabel='create new blog' ref={blogFormRef}>
-      <form onSubmit={handleCreateBlog}>
-        <div>
-          title:
-          <input
-            type='text'
-            value={title}
-            name='Title'
-            onChange={({ target }) => setTitle(target.value)}
-          />
-        </div>
-        <div>
-          author:
-          <input
-            type='text'
-            value={author}
-            name='Author'
-            onChange={({ target }) => setAuthor(target.value)}
-          />
-        </div>
-        <div>
-          url:
-          <input
-            type='text'
-            value={url}
-            name='Url'
-            onChange={({ target }) => setUrl(target.value)}
-          />
-        </div>
-        <button type='submit'>create</button>
-      </form>
+      <BlogForm handleCreateBlog={handleCreateBlog} />
     </Togglable>
   )
 
@@ -130,23 +98,11 @@ const App = () => {
     window.location.reload()
   }
 
-  const handleCreateBlog = async (event) => {
-    event.preventDefault()
-
-    setTitle('')
-    setUrl('')
-    setAuthor('')
-
-    const newBlog = {
-      title: title,
-      author: author,
-      url: url
-    }
-
+  const handleCreateBlog = async (blogObject) => {
     try {
       blogFormRef.current.toggleVisibility()
 
-      const blogSaved = await blogService.create(newBlog)
+      const blogSaved = await blogService.create(blogObject)
       setBlogs(() => blogs.concat(blogSaved))
       setNotificationMessage(`a new blog ${blogSaved.title} by ${blogSaved.author} added`)
       setNotificationType('success')
