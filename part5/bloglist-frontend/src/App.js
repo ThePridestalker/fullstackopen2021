@@ -67,7 +67,7 @@ const App = () => {
       <p>{user.name} logged in <button onClick={handleLogout}>logout</button> </p>
       {createNew()}
       {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} />
+        <Blog key={blog.id} blog={blog} handleUpdateBlog={handleUpdateBlog} />
       )}
     </div>
   )
@@ -109,6 +109,17 @@ const App = () => {
       setTimeout(() => {
         setNotificationMessage(null)
       }, 5000)
+    } catch (exception) {
+      console.log(exception.response.data)
+    }
+  }
+
+  const handleUpdateBlog = async (blogId, blogObject) => {
+    try {
+      const blogUpdated = await blogService.update(blogId, blogObject)
+      setBlogs(blogs.map(blog => {
+        return blog.id === blogUpdated.id ? blogUpdated : blog
+      }))
     } catch (exception) {
       console.log(exception.response.data)
     }
