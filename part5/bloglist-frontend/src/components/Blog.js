@@ -1,5 +1,5 @@
 import { useState } from 'react'
-const Blog = ({ blog, handleUpdateBlog }) => {
+const Blog = ({ blog, user, handleUpdateBlog, handleDeleteBlog }) => {
   const [displayDetails, setDisplayDetails] = useState(false)
 
   const blogStyle = {
@@ -18,14 +18,29 @@ const Blog = ({ blog, handleUpdateBlog }) => {
     handleUpdateBlog(blog.id, blogWithLikesIncreased)
   }
 
+  const deleteBlog = (blogId) => {
+    if (window.confirm('Do you really want to leave?')) {
+      handleDeleteBlog(blogId)
+    }
+  }
+
+  const handleVisible = (blogAuthor) => {
+    if (blogAuthor !== user.name) {
+      return { display: 'none' }
+    }
+  }
+
   return (
     <div style={blogStyle}>
       {blog.title} <button onClick={() => setDisplayDetails(!displayDetails)}>{displayDetails ? 'hide' : 'show'}</button> <br />
-      {displayDetails &&
-        <div>{blog.url}<br />
-          likes {blog.likes} <button onClick={() => increaseLikes(blog)}>like</button> <br />
-          {blog.author}<br />
-        </div>}
+      {
+        displayDetails &&
+          <div>{blog.url}<br />
+            likes {blog.likes} <button onClick={() => increaseLikes(blog)}>like</button> <br />
+            {blog.author}<br />
+          </div>
+      }
+      <button style={handleVisible(blog.author)} onClick={() => deleteBlog(blog.id)}>delete</button>
     </div>
   )
 }

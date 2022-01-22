@@ -70,7 +70,7 @@ const App = () => {
         <p>{user.name} logged in <button onClick={handleLogout}>logout</button> </p>
         {createNew()}
         {sortedBlogs.map(blog =>
-          <Blog key={blog.id} blog={blog} handleUpdateBlog={handleUpdateBlog} />
+          <Blog key={blog.id} blog={blog} user={user} handleUpdateBlog={handleUpdateBlog} handleDeleteBlog={handleDeleteBlog} />
         )}
       </div>
     )
@@ -120,10 +120,18 @@ const App = () => {
 
   const handleUpdateBlog = async (blogId, blogObject) => {
     try {
-      const blogUpdated = await blogService.update(blogId, blogObject)
+      const updatedBlog = await blogService.update(blogId, blogObject)
       setBlogs(blogs.map(blog => {
-        return blog.id === blogUpdated.id ? blogUpdated : blog
+        return blog.id === updatedBlog.id ? updatedBlog : blog
       }))
+    } catch (exception) {
+      console.log(exception.response.data)
+    }
+  }
+
+  const handleDeleteBlog = async (blogId) => {
+    try {
+      setBlogs(blogs.filter(blog => blog.id !== blogId))
     } catch (exception) {
       console.log(exception.response.data)
     }
