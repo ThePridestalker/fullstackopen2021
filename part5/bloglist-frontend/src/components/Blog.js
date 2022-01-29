@@ -24,23 +24,27 @@ const Blog = ({ blog, user, handleUpdateBlog, handleDeleteBlog }) => {
     }
   }
 
-  const handleVisible = (blogAuthor) => {
-    if (blogAuthor !== user.name) {
+  const handleVisible = (blogCreator) => {
+    if (blogCreator !== user.name) {
       return { display: 'none' }
     }
   }
 
   return (
-    <div style={blogStyle}>
-      {blog.title} <button onClick={() => setDisplayDetails(!displayDetails)}>{displayDetails ? 'hide' : 'show'}</button> <br />
+    <div className='blog' style={blogStyle}>
+      {blog.title} - {blog.author}<button onClick={() => setDisplayDetails(!displayDetails)}>{displayDetails ? 'hide' : 'show'}</button> <br />
       {
         displayDetails &&
-          <div>{blog.url}<br />
-            likes {blog.likes} <button onClick={() => increaseLikes(blog)}>like</button> <br />
-            {blog.author}<br />
+          <div className='blog-url-and-likes'>
+            {blog.url}
+            <br />
+            likes {blog.likes} <button onClick={() => increaseLikes(blog)}>like</button>
+            <br />
+            {blog.user.name}
+            <br />
           </div>
       }
-      <button style={handleVisible(blog.author)} onClick={() => deleteBlog(blog.id)}>delete</button>
+      <button style={handleVisible(blog.user.name)} onClick={() => deleteBlog(blog.id)}>delete</button>
     </div>
   )
 }
