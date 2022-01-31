@@ -114,6 +114,11 @@ const App = () => {
         setNotificationMessage(null)
       }, 5000)
     } catch (exception) {
+      setNotificationMessage(exception.response.data)
+      setNotificationType('error')
+      setTimeout(() => {
+        setNotificationMessage(null)
+      }, 5000)
       console.log(exception.response.data)
     }
   }
