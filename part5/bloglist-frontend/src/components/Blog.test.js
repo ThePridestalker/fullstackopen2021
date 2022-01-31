@@ -1,4 +1,5 @@
 import '@testing-library/jest-dom/extend-expect'
+// eslint-disable-next-line no-unused-vars
 import { fireEvent, prettyDOM, render } from '@testing-library/react'
 import Blog from './Blog'
 
@@ -31,7 +32,7 @@ describe('<Blog/>', () => {
     )
   })
 
-  test('should render the blogs title and author, but does not render its url or number of likes by default', () => {
+  it('should render the blogs title and author, but does not render its url or number of likes by default', () => {
     // check that the blog displays title and author
     // component.getByText('test blog - Axel')
     expect(component.container).toHaveTextContent(`${blog.title} - ${blog.author}`)
@@ -41,10 +42,10 @@ describe('<Blog/>', () => {
     expect(blogDetails).toBeNull()
   })
 
-  test('should render the blogs url and number of likes when the button controlling the display of details has been clicked', () => {
+  it('should render the blogs url and number of likes when the button controlling the display of details has been clicked', () => {
     const displayDetailsButton = component.getByText('show')
     fireEvent.click(displayDetailsButton)
-    console.log(prettyDOM(component.container))
+    // console.log(prettyDOM(component.container))
 
     // expect(component.container).toHaveTextContent(blog.url)
     const blogUrl = component.container.querySelector('.blog-url')
@@ -53,5 +54,21 @@ describe('<Blog/>', () => {
     // expect(component.container).toHaveTextContent(`likes ${blog.likes}`)
     const blogLikes = component.container.querySelector('.blog-likes')
     expect(blogLikes).toHaveTextContent(`likes ${blog.likes}`)
+  })
+
+  test('if the like button is clicked twice, the event handler the component received as props is called twice.', () => {
+    // calling updateMockHandler twice when pressing the button of likes twice
+
+    // display the like button
+    const displayDetailsButton = component.getByText('show')
+    fireEvent.click(displayDetailsButton)
+
+    const likeButton = component.getByText('like')
+    fireEvent.click(likeButton)
+    fireEvent.click(likeButton)
+
+    // both ways work but the second one is cleaner
+    // expect(updateMockHandler.mock.calls).toHaveLength(2)
+    expect(updateMockHandler).toHaveBeenCalledTimes(2)
   })
 })
