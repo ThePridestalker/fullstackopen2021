@@ -14,7 +14,8 @@ const Notification = ({ message, messageType }) => {
 }
 
 Notification.propTypes = {
-  message: PropTypes.string.isRequired,
+  // removed the .isRequired to avoid error if it was null
+  message: PropTypes.string,
   messageType: PropTypes.string.isRequired
 }
 
