@@ -46,5 +46,12 @@ describe('Blog App', function () {
       cy.get('#submitButton').click()
       cy.get('.success')
     })
+
+    it('Users can like a blog', function () {
+      cy.createBlog({ title: 'blog title from cypress', author: 'Axel', url: 'www.thiscouldbeablogurl.com' })
+      cy.contains('show').click()
+      cy.contains('like').click()
+      cy.contains('likes 1')
+    })
   })
 })
