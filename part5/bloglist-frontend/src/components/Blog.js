@@ -42,7 +42,7 @@ const Blog = ({ blog, user, handleUpdateBlog, handleDeleteBlog }) => {
             <p className='blog-owner'>{blog.user.name}</p>
           </div>
       }
-      <button style={handleVisible(blog.user.name)} onClick={() => deleteBlog(blog.id)}>delete</button>
+      <button id='deleteBlog' style={handleVisible(blog.user.name)} onClick={() => deleteBlog(blog.id)}>delete</button>
     </div>
   )
 }
