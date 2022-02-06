@@ -34,7 +34,7 @@ describe('Blog App', function () {
     })
   })
 
-  describe.only('When logged in', function () {
+  describe('When logged in', function () {
     let user2
     beforeEach(function () {
       cy.login({ username: user.username, password: user.password })
@@ -61,7 +61,8 @@ describe('Blog App', function () {
         {
           title: 'blog title from cypress',
           author: 'Axel',
-          url: 'www.thiscouldbeablogurl.com'
+          url: 'www.thiscouldbeablogurl.com',
+          likes: 0
         }
       )
 
@@ -86,7 +87,8 @@ describe('Blog App', function () {
         {
           title: 'blog title from cypress',
           author: 'Axel',
-          url: 'www.thiscouldbeablogurl.com'
+          url: 'www.thiscouldbeablogurl.com',
+          likes: 0
         }
       )
 
@@ -100,7 +102,8 @@ describe('Blog App', function () {
         {
           title: 'you cant delete me if you are not the owner',
           author: 'Axel',
-          url: 'www.thiscouldbeablogurl.com'
+          url: 'www.thiscouldbeablogurl.com',
+          likes: 0
         }
       )
       // checking with other user
@@ -110,6 +113,46 @@ describe('Blog App', function () {
 
       cy.contains('you cant delete me if you are not the owner')
       cy.get('#deleteBlog').should('have.css', 'display', 'none')
+    })
+
+    it('blogs are ordered according to likes with the blog with the most likes being first', function () {
+      // I create 3 blogs
+      cy.createBlog(
+        {
+          title: 'this blog should be the 3rd',
+          author: 'Axel',
+          url: 'www.thiscouldbeablogurl.com',
+          likes: 1
+        }
+      )
+      cy.createBlog(
+        {
+          title: 'this blog should be the 1st',
+          author: 'Axel',
+          url: 'www.thiscouldbeablogurl.com',
+          likes: 9
+        }
+      )
+      cy.createBlog(
+        {
+          title: 'this blog should be the 2nd',
+          author: 'Axel',
+          url: 'www.thiscouldbeablogurl.com',
+          likes: 5
+        }
+      )
+
+      // Display the full info of blogs
+      cy.get('.blog').each((blog) => {
+        cy.wrap(blog).contains('show').click()
+      })
+
+      // check the values of the blogs likes
+      cy.get('.blog').then(blog => {
+        cy.wrap(blog[0]).contains('likes 9')
+        cy.wrap(blog[1]).contains('likes 5')
+        cy.wrap(blog[2]).contains('likes 1')
+      })
     })
   })
 })

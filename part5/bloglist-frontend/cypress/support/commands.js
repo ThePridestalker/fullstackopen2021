@@ -32,14 +32,15 @@ Cypress.Commands.add('login', ({ username, password }) => {
     })
 })
 
-Cypress.Commands.add('createBlog', ({ title, author, url }) => {
+Cypress.Commands.add('createBlog', ({ title, author, url, likes }) => {
   cy.request({
     method: 'POST',
     url: 'http://localhost:3003/api/blogs',
     body: {
       title,
       author,
-      url
+      url,
+      likes
     },
     headers: {
       Authorization: `Bearer ${JSON.parse(localStorage.getItem('loggedBloglistUser')).token}`
