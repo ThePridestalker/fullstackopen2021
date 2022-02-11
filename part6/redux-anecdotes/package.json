@@ -35,6 +35,7 @@
     ]
   },
   "devDependencies": {
+    "redux-devtools-extension": "^2.13.9",
     "standard": "^16.0.4"
   }
 }
