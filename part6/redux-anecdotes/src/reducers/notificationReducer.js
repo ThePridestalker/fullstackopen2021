@@ -14,9 +14,6 @@ export const dismissNotification = () => {
 }
 
 const notificationReducer = (state = null, action) => {
-  console.log('NOTIFICATION REDUCER - ACTION', action)
-  console.log('NOTIFICATION REDUCER - STATE', state)
-
   switch (action.type) {
     case 'NEW_NOTIFICATION':
       return action.data
