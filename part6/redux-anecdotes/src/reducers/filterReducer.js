@@ -4,11 +4,11 @@ const filterSlice = createSlice({
   name: 'filter',
   initialState: '',
   reducers: {
-    filterAnecdotes: (state, action) => {
+    filterAnecdotes: (_state, action) => {
       return [action.payload]
     }
   }
 })
 
 export const { filterAnecdotes } = filterSlice.actions
-export default filterSlice
+export default filterSlice.reducer
