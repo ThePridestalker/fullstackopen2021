@@ -1,14 +1,10 @@
 import { createSlice } from '@reduxjs/toolkit'
+import anecdotesService from '../services/anecdotes'
 
 const anecdoteSlice = createSlice({
   name: 'anecdote',
   initialState: [],
   reducers: {
-    createAnecdote: (state, action) => {
-      // state.push() is valid in reduxToolkit
-      state.push(action.payload)
-      // return [...state, newAnecdote]
-    },
     voteAnecdote: (state, action) => {
       const id = action.payload
 
@@ -21,6 +17,7 @@ const anecdoteSlice = createSlice({
         anecdote.id !== id ? anecdote : changedAnecdote
       ).sort((a, b) => b.votes - a.votes)
     },
+    // you can define action creators like this too
     appendAnecdote (state, action) {
       state.push(action.payload)
     },
@@ -29,5 +26,13 @@ const anecdoteSlice = createSlice({
     }
   }
 })
-export const { createAnecdote, voteAnecdote, appendAnecdote, setAnecdotes } = anecdoteSlice.actions
+export const { voteAnecdote, appendAnecdote, setAnecdotes } = anecdoteSlice.actions
+
+export const createAnecdote = (content) => {
+  return async (dispatch) => {
+    const newAnecdotes = await anecdotesService.createNew(content)
+    dispatch(appendAnecdote(newAnecdotes))
+  }
+}
+
 export default anecdoteSlice.reducer
