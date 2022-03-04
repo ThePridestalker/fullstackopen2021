@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Route, Routes, useMatch } from 'react-router-dom'
+import { Route, Routes, useMatch, useNavigate } from 'react-router-dom'
 import Menu from './components/Menu'
 import Footer from './components/Footer'
 import AnecdoteList from './components/AnecdoteList'
@@ -8,6 +8,8 @@ import About from './components/About'
 import Anecdote from './components/Anecdote'
 
 const App = () => {
+  const navigate = useNavigate()
+
   const [anecdotes, setAnecdotes] = useState([
     {
       content: 'If it hurts, do it more often',
@@ -30,6 +32,18 @@ const App = () => {
   const addNew = (anecdote) => {
     anecdote.id = Number((Math.random() * 10000).toFixed(0))
     setAnecdotes(anecdotes.concat(anecdote))
+    // replace: true replaces the history last component by the new one
+    // we get redirected to, so if we were in the component CreateNew
+    // and navigate to the Anecdotes one with repace: true, we wont be
+    // able to press the browser back button and get back to CreateNew,
+    // as it has gotten replaced in the history.
+
+    // navigate("/", { replace: true })
+    navigate('/')
+    setNotification(`A new anecdote ${anecdote.content} created!`)
+    setTimeout(() => {
+      setNotification('')
+    }, 5000)
   }
 
   const anecdoteById = (id) =>
@@ -56,6 +70,11 @@ const App = () => {
       <div>
         <h1>Software anecdotes</h1>
         <Menu />
+
+        {notification.length > 0 &&
+          <div>
+            {notification}
+          </div>}
 
         <Routes>
           <Route path='/' element={<AnecdoteList anecdotes={anecdotes} />} />
